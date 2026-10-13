@@ -1,29 +1,36 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { useGame } from '../game/GameState';
 
 export default function StartPage() {
-  const nav = useNavigate();
-
+  const navigate = useNavigate();
+  const { found, habit, reset } = useGame();
+  const started = found.length > 0;
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
-      <div className="w-[760px] rounded-2xl border border-slate-200 bg-white/80 shadow-sm p-10">
-        <div className="text-xs text-slate-500">AI MEMORY RECONSTRUCTION</div>
-        <h1 className="mt-2 text-3xl font-semibold">回忆还原：小雅</h1>
-        <p className="mt-4 text-sm text-slate-600 leading-relaxed">
-          你整理她的遗物时发现了一份手机备份。系统提示：部分记录可能被编辑过。
-        </p>
-
-        <div className="mt-10 flex items-center justify-between">
-          <div className="text-xs text-slate-500">
-            Status: Backup Ready · Source: HomeMind
-          </div>
-          <button
-            onClick={() => nav("/phone")}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm hover:bg-slate-800"
-          >
-            开始还原
-          </button>
-        </div>
-      </div>
+    <div className="text-center max-w-sm px-6">
+      <h1 className="text-3xl font-bold mb-6 tracking-widest text-slate-300">HOME MIND</h1>
+      <p className="text-sm text-slate-400 leading-loose mb-8">
+        小雅已经三天没有消息了。
+        <br />
+        家里的智能系统记下了一切，却有人动过这些记录。
+        <br />
+        翻看手机里的 App，找出是谁。
+      </p>
+      <button
+        onClick={() => navigate(habit ? '/phone' : '/panel')}
+        className="px-10 py-3 border border-slate-600 text-slate-200 hover:bg-white hover:text-black transition-all"
+      >
+        {started ? '继续' : 'START'}
+      </button>
+      {started && (
+        <button
+          onClick={() => {
+            if (window.confirm('清除所有进度重新开始?')) reset();
+          }}
+          className="block mx-auto mt-4 text-xs text-slate-500 underline hover:text-slate-300"
+        >
+          重新开始
+        </button>
+      )}
     </div>
   );
 }

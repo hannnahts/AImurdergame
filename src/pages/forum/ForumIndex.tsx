@@ -1,78 +1,74 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import DeviceShell from "../../components/DeviceShell";
-import { forumPosts, forumSections, sectionCountOffset } from "./forumData";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useGame } from "../../game/GameState";
 import type { SectionKey } from "./forumTypes";
-import ForumTopBar from "./components/ForumTopBar";
-import ForumSidebar from "./components/ForumSidebar";
+import { forumPosts } from "./forumData";
+import { ForumFooter, ForumHeader, ForumNav, ForumSideBar } from "./components/ForumChrome";
 import PostList from "./components/PostList";
 
 export default function ForumIndex() {
   const nav = useNavigate();
-  const [activeSection, setActiveSection] = useState<SectionKey>("home");
+  const { notify } = useGame();
+  const init = (useLocation().state ?? {}) as { section?: SectionKey; query?: string };
+
+  const [activeSection, setActiveSection] = useState<SectionKey>(init.section ?? "home");
+  const [query, setQuery] = useState(init.query ?? "");
+  const [sort, setSort] = useState<"default" | "hot">("default");
 
   const filteredPosts = useMemo(() => {
-    if (activeSection === "home") return forumPosts;
-    return forumPosts.filter(
-      (p) => p.section === activeSection || p.mirrors?.includes(activeSection)
+    const q = query.trim().toLowerCase();
+    const base =
+      activeSection === "home"
+        ? forumPosts
+        : activeSection.startsWith("mine_")
+          ? forumPosts.filter((p) => p.author === "小雅_Cloud")
+          : forumPosts.filter((p) => p.section === activeSection);
+    const searched = q
+      ? base.filter((p) => p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q) || p.author.toLowerCase().includes(q))
+      : base;
+    return [...searched].sort((a, b) =>
+      sort === "hot" ? b.views - a.views : Number(!!b.isPinned) - Number(!!a.isPinned),
     );
-  }, [activeSection]);
+  }, [activeSection, query, sort]);
 
-  const sectionCounts = useMemo(() => {
-    const counts: Record<SectionKey, number> = {
-      home: forumPosts.length,
-      help: 0,
-      life: 0,
-      tech: 0,
-      announce: 0,
-      other: 0,
-      mine_posts: 0,
-      mine_fav: 0,
-      mine_hidden: 0,
-    };
-    forumPosts.forEach((p) => {
-      counts[p.section] += 1;
-      p.mirrors?.forEach((m) => {
-        counts[m] += 1;
-      });
-    });
-    return counts;
-  }, []);
-
-  const boostedCounts = useMemo(() => {
-    const next = { ...sectionCounts };
-    Object.entries(sectionCountOffset).forEach(([key, extra]) => {
-      const k = key as SectionKey;
-      next[k] = (next[k] ?? 0) + (extra ?? 0);
-    });
-    return next;
-  }, [sectionCounts]);
-
-  const sections = useMemo(() => {
-    return forumSections.map((s) => ({
-      ...s,
-      count: boostedCounts[s.key] ?? s.count,
-    }));
-  }, [boostedCounts]);
+  const handleSelect = (key: SectionKey, locked?: boolean) => {
+    if (locked) {
+      notify("此入口需要密码");
+      return;
+    }
+    setActiveSection(key);
+  };
 
   return (
-    <DeviceShell title="XX 论坛" variant="tablet">
-      <div className="h-full bg-gradient-to-b from-slate-50 via-white to-slate-50">
-        <div className="mx-auto h-full max-w-5xl px-4 py-6">
-          <div className="sticky top-0 z-20 bg-gradient-to-b from-slate-50 via-white to-transparent pb-2">
-            <ForumTopBar subtitle="HomeMind / 讨论" onBack={() => nav(-1)} />
-          </div>
+    <div className="min-h-full bg-[#f4f4f4] text-[#333]">
+      <ForumHeader query={query} onQuery={setQuery} />
+      <ForumNav active={activeSection.startsWith("mine_") ? "" : activeSection} onSelect={setActiveSection} />
 
-          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[240px,1fr] md:items-start">
-            <div className="md:sticky md:top-24">
-              <ForumSidebar sections={sections} active={activeSection} onSelect={(key) => setActiveSection(key)} />
-            </div>
-            <div className="md:h-[calc(100vh-220px)] md:overflow-y-auto md:pr-2">
-              <PostList posts={filteredPosts} activeSection={activeSection} />
-            </div>
+      <div className="grid gap-3 p-3 md:grid-cols-[minmax(0,1fr)_260px]">
+        <main className="border border-[#e6e6e6] bg-white">
+          <div className="flex items-center justify-between border-b border-[#eee] bg-[#fafafa] px-4 py-2 text-[13px]">
+            <span className="text-[#777]">共 {filteredPosts.length} 个主题</span>
+            <span className="flex gap-3">
+              {([["default", "综合"], ["hot", "热门"]] as const).map(([k, label]) => (
+                <button key={k} onClick={() => setSort(k)} className={sort === k ? "font-semibold text-orange-600" : "text-[#888] hover:text-orange-500"}>
+                  {label}
+                </button>
+              ))}
+            </span>
           </div>
-        </div>
+          <PostList posts={filteredPosts} onOpen={(id) => nav(`/phone/forum/detail/${id}`)} />
+          <div className="flex items-center justify-center gap-1.5 border-t border-[#eee] py-3 text-[13px] text-[#777]">
+            <span className="rounded bg-orange-500 px-2.5 py-0.5 text-white">1</span>
+            <span className="rounded border border-[#e6e6e6] px-2.5 py-0.5">2</span>
+            <span className="rounded border border-[#e6e6e6] px-2.5 py-0.5">3</span>
+            <span>…</span>
+            <span className="rounded border border-[#e6e6e6] px-2.5 py-0.5">下一页</span>
+          </div>
+        </main>
+
+        <ForumSideBar onSelect={handleSelect} onOpen={(id) => nav(`/phone/forum/detail/${id}`)} />
       </div>
-    </DeviceShell>
+      <ForumFooter />
+    </div>
   );
 }
