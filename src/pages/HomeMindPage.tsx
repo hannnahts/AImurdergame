@@ -50,7 +50,6 @@ export default function HomeMindPage() {
       localStorage.setItem("hm_unlocked", "1");
       // 轻触震动（若设备支持）
       if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-        // @ts-expect-error: vibrate exists on supported devices
         navigator.vibrate?.(80);
       }
       setTimeout(() => setUnlockAnim(false), 1200);

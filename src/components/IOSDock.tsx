@@ -1,5 +1,3 @@
-import React from "react";
-
 export type DockItem = {
   id: string;
   label: string;

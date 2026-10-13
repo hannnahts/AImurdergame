@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 
+// tiny local helper so we do not need the clsx package
+const clsx = (...parts: Array<string | false | null | undefined>) =>
+  parts.filter(Boolean).join(" ");
+
 type Props = {
   title?: string;
   children: React.ReactNode;
