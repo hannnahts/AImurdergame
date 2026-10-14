@@ -44,7 +44,7 @@ export default function ForumIndex() {
       <ForumHeader query={query} onQuery={setQuery} />
       <ForumNav active={activeSection.startsWith("mine_") ? "" : activeSection} onSelect={setActiveSection} />
 
-      <div className="grid gap-3 p-3 md:grid-cols-[minmax(0,1fr)_260px]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 p-3 md:grid-cols-[minmax(0,1fr)_260px]">
         <main className="border border-[#e6e6e6] bg-white">
           <div className="flex items-center justify-between border-b border-[#eee] bg-[#fafafa] px-4 py-2 text-[13px]">
             <span className="text-[#777]">共 {filteredPosts.length} 个主题</span>

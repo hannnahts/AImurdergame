@@ -41,7 +41,7 @@ function BatteryIcon({ level }: { level: number }) {
 
 function StatusBar({ time, dark }: { time: string; dark: boolean }) {
   return (
-    <div className={`pointer-events-none absolute inset-x-0 top-0 z-30 flex h-9 items-center justify-between px-6 text-[12px] font-medium transition-colors duration-500 ${dark ? 'text-black/85' : 'text-white/90'}`}>
+    <div className={`pointer-events-none absolute inset-x-0 top-0 z-30 flex h-9 items-center justify-between px-6 text-[12px] font-medium transition-colors duration-500 ${dark ? 'text-black/85' : 'text-white/90'}`} style={{ height: 'calc(2.25rem + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <span className="tabular-nums">
         {time}
         <span className={`ml-2 font-normal ${dark ? 'text-black/45' : 'text-white/55'}`}>{STORY_DATE}</span>
@@ -92,7 +92,7 @@ function LockScreen({ time, dragY, dragging, unlocking, handlers }: {
       role="button"
       tabIndex={0}
       aria-label="上滑或点击解锁"
-      className="absolute inset-0 z-20 flex cursor-grab touch-none select-none flex-col items-center px-6 pb-8 pt-16 text-white outline-none active:cursor-grabbing"
+      className="absolute inset-0 z-20 flex cursor-grab touch-none select-none flex-col items-center px-6 pb-8 pt-16 text-white outline-none short:pt-8 active:cursor-grabbing"
       style={{
         transform: `translateY(${y})`,
         opacity,
@@ -101,9 +101,9 @@ function LockScreen({ time, dragY, dragging, unlocking, handlers }: {
       }}
     >
       <p className="text-sm text-white/70">{STORY_DATE}</p>
-      <p className="mt-1 text-[88px] font-light leading-none tracking-tight tabular-nums md:text-[104px]">{time}</p>
+      <p className="mt-1 text-[88px] font-light leading-none tracking-tight tabular-nums md:text-[104px] short:!text-[56px]">{time}</p>
 
-      <div className="mt-10 w-full max-w-sm space-y-2.5">
+      <div className="mt-10 w-full max-w-sm space-y-2.5 short:hidden">
         {NOTICES.map((n, i) => (
           <div key={i} className="panel-rise rounded-[1.6rem] bg-white/[0.06] p-1 ring-1 ring-white/10" style={{ animationDelay: `${200 + i * 120}ms` }}>
             <div className="rounded-[1.35rem] bg-white/10 px-4 py-3 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] backdrop-blur-xl">
@@ -137,14 +137,18 @@ const TITLES: Record<string, string> = {
   '/phone/settings': '设置',
   '/phone/settings/general': '通用',
   '/phone/settings/about': '关于本机',
+  '/phone/settings/storage': 'iPad 储存空间',
   '/phone/settings/developer': '开发者选项',
 };
+const APP_NAMES: Record<string, string> = { homemind: '打开 HomeMind', forum: '打开论坛', notes: '打开备忘录', settings: '打开设置' };
+
 function backOf(path: string): { to: string; label: string } {
   if (path.startsWith('/phone/homemind/')) return { to: '/phone/homemind', label: 'HomeMind' };
   if (path === '/phone/notes/clues' || path === '/phone/notes/todo') return { to: '/phone/notes', label: '备忘录' };
   if (path.startsWith('/phone/notes/todo/')) return { to: '/phone/notes/todo', label: '待办' };
   if (path === '/phone/settings/developer/console') return { to: '/phone/settings/developer', label: '开发者选项' };
   if (path === '/phone/settings/general') return { to: '/phone/settings', label: '设置' };
+  if (path === '/phone/settings/storage' || path === '/phone/settings/about') return { to: '/phone/settings/general', label: '通用' };
   if (path.startsWith('/phone/settings/')) return { to: '/phone/settings', label: '设置' };
   return { to: '/phone', label: '主屏幕' };
 }
@@ -190,8 +194,10 @@ function AppScreen({ path, dark, bare, onNavigate }: { path: string; dark: boole
           if (next !== scrolled) setScrolled(next);
         }}
       >
-        {large && <h1 className="pb-3 pt-1 text-[34px] font-bold leading-tight tracking-tight text-black">{large}</h1>}
-        <Outlet />
+        <div className="mx-auto w-full md:max-w-[44rem]">
+          {large && <h1 className="pb-3 pt-1 text-[34px] font-bold leading-tight tracking-tight text-black">{large}</h1>}
+          <Outlet />
+        </div>
       </div>
     </>
   );
@@ -201,9 +207,17 @@ function AppScreen({ path, dark, bare, onNavigate }: { path: string; dark: boole
 export default function TabletLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { toast } = useGame();
+  const { toast, track } = useGame();
+  const lastApp = useRef('');
   const time = useClock();
   const atHome = pathname === '/phone' || pathname === '/phone/';
+  useEffect(() => {
+    const seg = pathname.split('/')[2];
+    if (seg && seg !== lastApp.current) {
+      lastApp.current = seg;
+      track('open', APP_NAMES[seg] ?? seg);
+    }
+  }, [pathname, track]);
   const forumBare = pathname.startsWith('/phone/forum');
   const consoleDark = pathname.endsWith('/console'); // 后台终端:黑底全屏
 
@@ -255,17 +269,17 @@ export default function TabletLayout() {
 
   return (
     <div
-      className="relative h-[100dvh] w-full md:h-[744px] md:max-h-[calc(100dvh-2rem)] md:w-[1048px] md:rounded-[2.75rem] md:p-3 md:ring-1 md:ring-white/15 md:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.18)] md:bg-[linear-gradient(145deg,#33363d,#0d0e10_60%,#1f2126)]"
+      className="relative h-[100dvh] w-full frame:h-[744px] frame:max-h-[calc(100dvh-2rem)] frame:w-[1048px] frame:max-w-[calc(100vw-2rem)] frame:rounded-[2.75rem] frame:p-3 frame:ring-1 frame:ring-white/15 frame:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.18)] frame:bg-[linear-gradient(145deg,#33363d,#0d0e10_60%,#1f2126)]"
       style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', system-ui, sans-serif" }}
     >
       {/* 机身:前置摄像头与侧键(仅电脑端) */}
-      <div className="pointer-events-none absolute left-1/2 top-[2.5px] hidden h-[7px] w-[7px] -translate-x-1/2 rounded-full bg-[#05060a] ring-1 ring-white/10 md:block" />
-      <button aria-label="电源键 · 锁屏" onClick={lock} className="absolute -right-[5px] top-20 z-10 hidden h-16 w-[8px] rounded-r bg-[#23252a] transition-transform duration-200 hover:translate-x-[1px] active:translate-x-[-1px] md:block" />
-      <div className="pointer-events-none absolute -left-[3px] top-24 hidden h-9 w-[3px] rounded-l bg-[#23252a] md:block" />
-      <div className="pointer-events-none absolute -left-[3px] top-36 hidden h-9 w-[3px] rounded-l bg-[#23252a] md:block" />
+      <div className="pointer-events-none absolute left-1/2 top-[2.5px] hidden h-[7px] w-[7px] -translate-x-1/2 rounded-full bg-[#05060a] ring-1 ring-white/10 frame:block" />
+      <button aria-label="电源键 · 锁屏" onClick={lock} className="absolute -right-[5px] top-20 z-10 hidden h-16 w-[8px] rounded-r bg-[#23252a] transition-transform duration-200 hover:translate-x-[1px] active:translate-x-[-1px] frame:block" />
+      <div className="pointer-events-none absolute -left-[3px] top-24 hidden h-9 w-[3px] rounded-l bg-[#23252a] frame:block" />
+      <div className="pointer-events-none absolute -left-[3px] top-36 hidden h-9 w-[3px] rounded-l bg-[#23252a] frame:block" />
 
       {/* 屏幕 */}
-      <div className="relative h-full w-full overflow-hidden bg-black md:rounded-[2rem] md:ring-4 md:ring-black">
+      <div className="relative h-full w-full overflow-hidden bg-black frame:rounded-[2rem] frame:ring-4 frame:ring-black">
         <Wallpaper blurred={!locked && !atHome} />
         <StatusBar time={time} dark={!locked && !atHome && !consoleDark} />
 
@@ -276,11 +290,11 @@ export default function TabletLayout() {
         )}
 
         {showContent && (atHome ? (
-          <div className="custom-scrollbar absolute inset-x-0 bottom-8 top-10 overflow-y-auto px-6 md:px-10">
+          <div className="custom-scrollbar absolute inset-x-0 overflow-y-auto px-6 md:px-10" style={{ top: 'calc(2.5rem + env(safe-area-inset-top, 0px))', bottom: 'calc(2rem + env(safe-area-inset-bottom, 0px))' }}>
             <Outlet />
           </div>
         ) : (
-          <div className={`app-open absolute inset-0 z-10 flex flex-col pb-6 pt-9 transition-colors duration-500 ${consoleDark ? 'bg-black text-white' : forumBare ? 'bg-white text-black' : 'bg-[#f2f2f7] text-black'}`}>
+          <div className={`app-open absolute inset-0 z-10 flex flex-col transition-colors duration-500 ${consoleDark ? 'bg-black text-white' : forumBare ? 'bg-white text-black' : 'bg-[#f2f2f7] text-black'}`} style={{ paddingTop: 'calc(2.25rem + env(safe-area-inset-top, 0px))', paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}>
             <AppScreen key={pathname} path={pathname.replace(/\/$/, '')} dark={consoleDark} bare={forumBare} onNavigate={navigate} />
           </div>
         ))}

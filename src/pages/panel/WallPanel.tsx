@@ -154,7 +154,7 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
       <div className="absolute inset-0 bg-black" style={{ opacity: darkness, ...t(900) }} />
 
       {/* 窗：天空自发光，不受房间暗度影响 */}
-      <div className="absolute left-[6%] top-[12%] h-[56%] w-[24%] overflow-hidden rounded-t-[40%] ring-4 ring-[#14110e]">
+      <div className="absolute left-[6%] top-[12%] h-[56%] w-[24%] overflow-hidden rounded-t-[40%] ring-4 ring-[#14110e] max-md:left-[10%] max-md:top-[3%] max-md:h-[26%] max-md:w-[46%]">
         <div className="absolute inset-0" style={{ background: `linear-gradient(180deg,${mix('#070b18', '#6aa6e6', day)},${mix('#0e1633', '#cfe4f7', day)})` }} />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(0deg,rgba(255,140,80,0.6),transparent 70%)', opacity: dusk, ...t(1200) }} />
         <div className="absolute inset-y-0 left-1/2 w-px bg-black/50" />
@@ -204,7 +204,7 @@ const HOUR_PRESETS: (number | null)[] = [null, 7.2, 12, 18.6, 23];
 
 export default function WallPanel() {
   const navigate = useNavigate();
-  const { habit, setHabit, unlock } = useGame();
+  const { habit, setHabit, unlock, track } = useGame();
   const [now, setNow] = useState(() => new Date());
   const [hourIdx, setHourIdx] = useState(0);
   const [lightsOn, setLightsOn] = useState(true);
@@ -241,8 +241,10 @@ export default function WallPanel() {
   const lamp = lightsOn ? level / 100 : 0;
   const kelvin = Math.round(2700 + 3800 * (warm / 100));
   const lampColor = mix('#ffae57', '#cfe0ff', warm / 100);
-  const log = (text: string) =>
+  const log = (text: string) => {
+    track('panel', text);
     setEvents((e) => [{ t: `${pad(now.getHours())}:${pad(now.getMinutes())}`, text }, ...e].slice(0, 4));
+  };
 
   const setBrightness = (v: number) => { setLevel(v); setLightsOn(v > 0); setScene(null); };
   const applyScene = (k: string) => {
@@ -311,13 +313,13 @@ export default function WallPanel() {
           )}
 
           {/* 非对称 Bento */}
-          <div className="grid flex-1 grid-cols-1 gap-3 md:min-h-0 md:grid-cols-12 md:grid-rows-2">
+          <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-12 md:grid-rows-[repeat(2,minmax(230px,1fr))]">
             {/* 灯光 */}
             <Card className="md:col-span-5 md:row-span-2" delay={80} icon="bulb" title="灯光"
               right={<Toggle on={lightsOn} label="灯光开关" onChange={() => { setLightsOn((v) => !v); setScene(null); log(`灯光 · ${lightsOn ? '已关闭' : '已开启'}`); }} />}>
               <div className="flex flex-1 flex-col justify-between gap-6">
                 <div>
-                  <p className="text-7xl font-light tabular-nums tracking-tight">{lightsOn ? level : 0}<span className="text-2xl text-white/40">%</span></p>
+                  <p className="text-6xl font-light tabular-nums tracking-tight md:text-7xl">{lightsOn ? level : 0}<span className="text-2xl text-white/40">%</span></p>
                   <p className="mt-2 text-xs tracking-wide text-white/50">{lightsOn ? `${kelvin}K · ${warm < 35 ? '暖光' : warm < 70 ? '自然光' : '冷光'}` : '已关闭'}</p>
                 </div>
                 <div className="space-y-4">

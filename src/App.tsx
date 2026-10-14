@@ -16,6 +16,7 @@ import PuzzlePage from './pages/case/PuzzlePage';
 import SettingsHome from './pages/settings/SettingsHome';
 import General from './pages/settings/General';
 import About from './pages/settings/About';
+import Storage from './pages/settings/Storage';
 import Developer from './pages/settings/Developer';
 import WallPanel from './pages/panel/WallPanel';
 import Ending from './pages/ending/Ending';
@@ -23,7 +24,7 @@ import Ending from './pages/ending/Ending';
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[radial-gradient(ellipse_at_center,#1a1d24_0%,#0a0b0e_70%)] text-slate-900 flex items-center justify-center font-sans md:p-4">
+      <div className="min-h-screen bg-[radial-gradient(ellipse_at_center,#1a1d24_0%,#0a0b0e_70%)] text-slate-900 flex items-center justify-center font-sans frame:p-4">
         <Routes>
           <Route path="/" element={<StartPage />} />
 
@@ -47,6 +48,7 @@ export default function App() {
               <Route index element={<SettingsHome />} />
               <Route path="general" element={<General />} />
               <Route path="about" element={<About />} />
+              <Route path="storage" element={<Storage />} />
               <Route path="developer">
                 <Route index element={<Developer />} />
                 <Route path="console" element={<AdminLogs />} />

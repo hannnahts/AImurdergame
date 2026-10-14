@@ -66,7 +66,7 @@ export default function ForumPostDetail() {
           const u = userInfo(f.user);
           const isOp = f.user === post.author;
           return (
-            <article key={f.n} className="grid border border-[#e6e6e6] bg-white md:grid-cols-[168px_minmax(0,1fr)]">
+            <article key={f.n} className="grid grid-cols-[minmax(0,1fr)] border border-[#e6e6e6] bg-white md:grid-cols-[168px_minmax(0,1fr)]">
               <div className="flex items-center gap-3 border-b border-[#eee] bg-[#fafafa] p-3 md:flex-col md:border-b-0 md:border-r md:py-5 md:text-center">
                 <Avatar name={f.user} size={52} />
                 <div className="min-w-0 md:mt-1">

@@ -10,7 +10,7 @@ export default function General() {
         <Row title="软件更新" detail="已是最新" />
       </Group>
       <Group>
-        <Row title="iPad 储存空间" detail="38.2 GB / 128 GB" />
+        <Row title="iPad 储存空间" detail="38.2 GB / 128 GB" chevron onClick={() => navigate('/phone/settings/storage')} />
         <Row title="后台 App 刷新" detail="打开" />
       </Group>
     </div>

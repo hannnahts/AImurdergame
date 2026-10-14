@@ -23,3 +23,11 @@
 }
 .app-open { animation: app-open 420ms cubic-bezier(0.32, 0.72, 0, 1) both; }
 @media (prefers-reduced-motion: reduce) { .app-open { animation: none; } }
+
+/* 手机端:去掉点击高亮和下拉橡皮筋,防止露出白底;输入框 ≥16px 避免 iOS 自动放大 */
+html, body { background: #0a0b0e; overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
+* { -webkit-tap-highlight-color: transparent; }
+button, [role="button"] { touch-action: manipulation; }
+@media (max-width: 767px) {
+  input, textarea, select { font-size: 16px !important; }
+}

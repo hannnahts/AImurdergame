@@ -5,6 +5,16 @@ import { PUZZLES } from './puzzles';
 export type Ending = 'confess' | 'hide' | null;
 // 玩家在墙面面板里布置的"习惯",之后会成为篡改者的指纹(第二章、第五章使用)
 export type Habit = { level: number; warm: number; curtain: number; target: number };
+export type TraceEntry = { at: number; kind: string; text: string };
+
+// 追加一条行为记录;1.5 秒内的完全重复忽略,最多保留 80 条
+function pushTrace(trace: TraceEntry[], kind: string, text: string): TraceEntry[] {
+  const last = trace[trace.length - 1];
+  const now = Date.now();
+  if (last && last.kind === kind && last.text === text && now - last.at < 1500) return trace;
+  return [...trace, { at: now, kind, text }].slice(-80);
+}
+
 type Saved = {
   found: string[];
   solved: string[];
@@ -12,12 +22,13 @@ type Saved = {
   habit: Habit | null;
   devMode: boolean;
   hmUnlocked: boolean;
+  trace: TraceEntry[];
   adminOpen: boolean;
   ending: Ending;
 };
 
 const KEY = 'homemind-save-v3';
-const empty: Saved = { found: [], solved: [], hints: {}, habit: null, devMode: false, hmUnlocked: false, adminOpen: false, ending: null };
+const empty: Saved = { found: [], solved: [], hints: {}, habit: null, devMode: false, hmUnlocked: false, trace: [], adminOpen: false, ending: null };
 
 function load(): Saved {
   try {
@@ -33,6 +44,7 @@ type Ctx = Saved & {
   unlock: (id?: string) => void;
   solve: (id: string) => void;
   askHint: (id: string) => void;
+  track: (kind: string, text: string) => void;
   setHabit: (h: Habit) => void;
   enableDev: () => void;
   unlockHM: () => void;
@@ -62,6 +74,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(t);
   }, [toast]);
 
+  // 玩家真实的操作习惯,只存在本地浏览器里
+  const track = useCallback((kind: string, text: string) => setSave((s) => ({ ...s, trace: pushTrace(s.trace, kind, text) })), []);
+
   const unlock = useCallback(
     (id?: string) => {
       if (!id || save.found.includes(id)) return;
@@ -90,7 +105,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       toast,
       unlock,
       solve,
-      askHint: (id) => setSave((s) => ({ ...s, hints: { ...s.hints, [id]: Math.min(4, (s.hints[id] ?? 0) + 1) } })),
+      askHint: (id) =>
+        setSave((s) => ({ ...s, hints: { ...s.hints, [id]: Math.min(4, (s.hints[id] ?? 0) + 1) }, trace: pushTrace(s.trace, 'hint', `向 AI 求助 ${id}`) })),
+      track,
       setHabit: (habit) => setSave((s) => ({ ...s, habit })),
       unlockHM: () => setSave((s) => ({ ...s, hmUnlocked: true })),
       enableDev: () => setSave((s) => ({ ...s, devMode: true })),
@@ -102,7 +119,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setToast(null);
       },
     }),
-    [save, toast, unlock, solve],
+    [save, toast, unlock, solve, track],
   );
 
   return <GameCtx.Provider value={value}>{children}</GameCtx.Provider>;

@@ -64,7 +64,7 @@ export function ForumNav({ active, onSelect }: { active: SectionKey | ''; onSele
   const tabs = forumSections.filter((s) => !s.key.startsWith('mine_'));
   return (
     <nav className="flex items-center border-b border-[#e6e6e6] bg-white pl-2 pr-3">
-      <div className="custom-scrollbar flex min-w-0 flex-1 overflow-x-auto whitespace-nowrap">
+      <div className="custom-scrollbar flex min-w-0 flex-1 overflow-x-auto whitespace-nowrap [mask-image:linear-gradient(to_right,#000_88%,transparent)]">
         {tabs.map((t) => (
           <button
             key={t.key}
@@ -77,8 +77,8 @@ export function ForumNav({ active, onSelect }: { active: SectionKey | ''; onSele
           </button>
         ))}
       </div>
-      <button onClick={() => notify('发帖需要先通过新手验证')} className="ml-2 shrink-0 rounded bg-orange-500 px-4 py-1.5 text-[13px] text-white transition-colors hover:bg-orange-600 active:scale-[0.97]">
-        ✎ 发帖
+      <button onClick={() => notify('发帖需要先通过新手验证')} className="ml-2 shrink-0 rounded bg-orange-500 px-3 py-1.5 text-[13px] text-white transition-colors hover:bg-orange-600 active:scale-[0.97] sm:px-4" aria-label="发帖">
+        ✎<span className="max-sm:hidden"> 发帖</span>
       </button>
     </nav>
   );
