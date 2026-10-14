@@ -276,7 +276,7 @@ export default function WallPanel() {
       {/* 机身 */}
       <div className="relative z-10 w-full md:w-[min(1080px,94vw)] md:rounded-[2.75rem] md:bg-[#080808] md:p-3 md:ring-1 md:ring-white/10 md:shadow-[0_60px_140px_-40px_rgba(0,0,0,0.9)]">
         <div className="pointer-events-none absolute left-1/2 top-1.5 hidden h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/20 md:block" />
-        <div className="flex min-h-[100dvh] flex-col gap-5 px-4 py-8 md:h-[min(700px,92dvh)] md:min-h-0 md:overflow-y-auto md:rounded-[calc(2.75rem-0.75rem)] md:bg-black/45 md:px-7 md:py-6">
+        <div className="custom-scrollbar flex min-h-[100dvh] flex-col gap-5 px-4 py-8 md:h-[min(700px,92dvh)] md:min-h-0 md:overflow-y-auto md:rounded-[calc(2.75rem-0.75rem)] md:bg-black/45 md:px-7 md:py-6">
           {/* 手机上:顶部留出一块"房间",让窗户和吊灯的光线变化看得见 */}
           <div className="h-[30dvh] shrink-0 md:hidden" aria-hidden />
           {/* 顶栏 */}
@@ -315,7 +315,7 @@ export default function WallPanel() {
           )}
 
           {/* 非对称 Bento */}
-          <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-12 md:grid-rows-[repeat(2,minmax(230px,1fr))]">
+          <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-12 md:grid-rows-[repeat(2,minmax(205px,1fr))]">
             {/* 灯光 */}
             <Card className="md:col-span-5 md:row-span-2" delay={80} icon="bulb" title="灯光"
               right={<Toggle on={lightsOn} label="灯光开关" onChange={() => { setLightsOn((v) => !v); setScene(null); log(`灯光 · ${lightsOn ? '已关闭' : '已开启'}`); }} />}>
