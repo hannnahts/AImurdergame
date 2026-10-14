@@ -14,9 +14,9 @@ export default function Ending() {
             <p className="mb-6">
               每一条被改过的记录，签名都是你。
               <br />
-              那一晚她想离开，你把门锁上了。
+              分手之后，你从没真正退出过她的家。那一晚，你锁上了门，关掉了保护。
               <br />
-              之后你做的一切，都是在向自己证明：不是你。
+              之后你做的一切，都是在向自己证明：这只是一次设备故障。
             </p>
             <p className="mb-8 text-zinc-500">现在，选择吧。</p>
             <div className="flex flex-col gap-3">
@@ -36,7 +36,7 @@ export default function Ending() {
                 <br />
                 原始的日志完整地躺在那里，一条都没有少。
                 <br />
-                这是她这三天里，第一次被人认真地"看见"。
+                她已经火化了。这些没被改动的记录，是她留下的唯一证词。
               </p>
             ) : (
               <p>

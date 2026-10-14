@@ -4,7 +4,7 @@ import { useGame } from '../game/GameState';
 
 const EASE = 'cubic-bezier(0.32,0.72,0,1)';
 const pad = (n: number) => String(n).padStart(2, '0');
-const STORY_DATE = '3月17日 周二'; // 故事里的"今天":事发后第三天
+const STORY_DATE = '2030年2月21日 周四'; // 故事里的"今天"
 
 // 同一次访问内只解锁一次(离开去后台再回来不会重新锁屏)
 let unlockedThisSession = false;
@@ -75,9 +75,9 @@ function Wallpaper({ blurred }: { blurred: boolean }) {
 
 /* ───────────── 锁屏 ───────────── */
 const NOTICES: { app: string; time: string; text: string }[] = [
-  { app: 'HomeMind', time: '现在', text: '小雅的手机已离线 3 天。' },
-  { app: 'HomeMind', time: '03-15 02:13', text: '检测到 4 条日志发生变更。' },
-  { app: '位置共享', time: '3 天前', text: '小雅 · 最后更新:家中 · 客厅' },
+  { app: 'HomeMind', time: '现在', text: '小雅的手机已离线 2 天。' },
+  { app: 'HomeMind', time: '02-20 02:13', text: '检测到 4 条日志发生变更。' },
+  { app: '备忘录', time: '昨天', text: '整理遗物:手机备份、猫砂、一把钥匙。' },
 ];
 
 function LockScreen({ time, dragY, dragging, unlocking, handlers }: {

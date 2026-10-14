@@ -12,12 +12,12 @@ export default function Todo() {
 
   return (
     <div>
-      <Group footer="想弄明白的事。">
+      <Group footer="想弄明白的事。她已经火化了,留下的只有这些记录。">
         {chapter.map((p) => {
           const isSolved = solved.includes(p.id);
           const blocked = !!p.after && !solved.includes(p.after);
           const missing = p.requires.filter((c) => !found.includes(c));
-          const to = p.kind === 'pin' ? (devMode ? '/phone/settings/developer' : '/phone/settings') : `/phone/notes/todo/${p.id}`;
+          const to = p.kind === 'pin' ? (devMode ? '/phone/settings/developer' : '/phone/settings') : p.kind === 'password' ? '/phone/homemind' : `/phone/notes/todo/${p.id}`;
           return (
             <Row
               key={p.id}
@@ -38,7 +38,7 @@ export default function Todo() {
 
       {done && (
         <Group footer="AI 助手里,有一段你还看不到的对话。">
-          <Row title="第一章 完" detail="有人动了所有记录,而且熟悉这里的一切。" />
+          <Row title="第一章 完" detail="有一台设备,从没离开过她的家。" />
           <Row title={<span className="text-[#007aff]">预览终章(开发中)</span>} chevron onClick={() => navigate('/ending')} />
         </Group>
       )}

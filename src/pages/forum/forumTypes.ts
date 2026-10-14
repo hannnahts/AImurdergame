@@ -1,4 +1,3 @@
-// src/pages/forum/forumTypes.ts
 export type SectionKey =
   | "home"
   | "help"
@@ -23,23 +22,28 @@ export type PostSection = Exclude<
   "home" | "mine_posts" | "mine_fav" | "mine_hidden"
 >;
 
-export type Comment = { user: string; time: string; text: string; likes?: number };
-
 export type Post = {
   id: string;
   title: string;
   section: PostSection;
+  mirrors?: SectionKey[]; // 其他板块也展示（我的帖子/收藏等）
   author: string;
   time: string;
   replies: number;
   views: number;
   isPinned?: boolean;
   isEdited?: boolean;
+  commentsDisabled?: boolean;
   tags?: string[];
-  excerpt: string;
+  excerpt?: string;
   content: string;
-  clueId?: string;
-  lastBy?: string;
-  lastTime?: string;
-  comments?: Comment[];
+  clueIds?: string[];
+  replyList?: ForumReply[];
+};
+
+export type ForumReply = {
+  author: string;
+  time: string;
+  content: string;
+  replyTo?: string;
 };

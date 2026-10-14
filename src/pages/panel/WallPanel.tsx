@@ -217,9 +217,9 @@ export default function WallPanel() {
   const [locked, setLocked] = useState(true);
   const [scene, setScene] = useState<string | null>(null);
   const [events, setEvents] = useState<{ t: string; text: string; clueId?: string }[]>([
-    { t: '今天 08:30', text: '智能门锁 · 小雅 已解锁' },
-    { t: '03-14 23:07', text: '智能门锁 · 已远程反锁' },
-    { t: '03-14 22:58', text: '客厅 · 检测到移动', clueId: 'clue_motion' },
+    { t: '02-19 23:10', text: '浴室 · 接地保护已关闭' },
+    { t: '02-19 23:07', text: '智能门锁 · 已远程反锁' },
+    { t: '02-19 22:40', text: '智能门锁 · 小雅 已解锁 (到家)', clueId: 'clue_motion' },
   ]);
 
   useEffect(() => {
@@ -300,7 +300,7 @@ export default function WallPanel() {
 
           {!habit && (
             <div className="panel-rise flex flex-wrap items-center justify-between gap-3 rounded-full bg-white/[0.06] py-2 pl-5 pr-2 ring-1 ring-white/10" style={{ animationDelay: '40ms' }}>
-              <p className="text-sm text-white/80">三天了。你又把客厅调成你习惯的样子,然后坐下来等。</p>
+              <p className="text-sm text-white/80">像以前一样,你把客厅调成你习惯的样子。</p>
               <button onClick={confirmScene} className="group flex items-center gap-3 rounded-full bg-white py-2 pl-5 pr-2 text-sm font-medium text-black transition-all duration-500 active:scale-[0.98]" style={{ transitionTimingFunction: EASE }}>
                 确认
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black/10 transition-transform duration-500 group-hover:translate-x-0.5">

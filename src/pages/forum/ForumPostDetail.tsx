@@ -7,7 +7,7 @@ import { userInfo } from "./userInfo";
 import { Avatar, Badge, ForumFooter, ForumHeader, ForumNav } from "./components/ForumChrome";
 import type { SectionKey } from "./forumTypes";
 
-type Floor = { n: number; user: string; time: string; text: string; likes?: number };
+type Floor = { n: number; user: string; time: string; text: string; likes?: number; replyTo?: string };
 
 export default function ForumPostDetail() {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +16,7 @@ export default function ForumPostDetail() {
   const { unlock, notify } = useGame();
   const [query, setQuery] = useState("");
   const [reply, setReply] = useState("");
-  useEffect(() => unlock(post?.clueId), [post, unlock]);
+  useEffect(() => post?.clueIds?.forEach((c) => unlock(c)), [post, unlock]);
 
   const backToList = (state?: { section?: SectionKey; query?: string }) => nav("/phone/forum", { state });
 
@@ -34,7 +34,7 @@ export default function ForumPostDetail() {
 
   const floors: Floor[] = [
     { n: 1, user: post.author, time: post.time, text: post.content },
-    ...(post.comments ?? []).map((c, i) => ({ n: i + 2, ...c })),
+    ...(post.replyList ?? []).map((c, i) => ({ n: i + 2, user: c.author, time: c.time, text: c.content, replyTo: c.replyTo })),
   ];
 
   return (
@@ -85,7 +85,7 @@ export default function ForumPostDetail() {
                   <span>发表于 {f.time}{isOp && f.n > 1 && <span className="ml-2 text-orange-600">楼主</span>}</span>
                   <span className="text-[13px] font-semibold text-[#bbb]">{f.n === 1 ? "楼主" : `#${f.n}`}</span>
                 </div>
-                <p className="min-h-[88px] whitespace-pre-line px-4 py-4 text-[15px] leading-7 text-[#333]">{f.text}</p>
+                <p className="min-h-[88px] whitespace-pre-line px-4 py-4 text-[15px] leading-7 text-[#333]">{f.replyTo && <span className="mr-1 text-sky-700">回复 @{f.replyTo}：</span>}{f.text}</p>
                 <div className="flex justify-end gap-4 px-4 pb-2.5 text-[12px] text-[#999]">
                   <button onClick={() => notify("已点赞")} className="hover:text-orange-600">👍 {f.likes ?? 0}</button>
                   <button onClick={() => setReply(`回复 ${f.n === 1 ? "楼主" : `#${f.n}`} ${f.user}:`)} className="hover:text-orange-600">回复</button>
@@ -97,6 +97,9 @@ export default function ForumPostDetail() {
         })}
 
         {/* 快速回复 */}
+        {post.commentsDisabled ? (
+          <p className="border border-[#e6e6e6] bg-white p-3 text-center text-[13px] text-[#999]">作者已关闭评论区。</p>
+        ) : (
         <div className="border border-[#e6e6e6] bg-white p-3">
           <p className="mb-2 text-[13px] font-semibold text-[#333]">快速回复</p>
           <textarea
@@ -115,6 +118,7 @@ export default function ForumPostDetail() {
             </button>
           </div>
         </div>
+        )}
       </div>
       <ForumFooter />
     </div>

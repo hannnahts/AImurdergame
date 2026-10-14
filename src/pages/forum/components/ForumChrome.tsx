@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useGame } from '../../../game/GameState';
-import { forumPosts, forumSections } from '../forumData';
+import { forumPosts, forumSections, sectionCountOffset } from '../forumData';
 import type { SectionKey } from '../forumTypes';
 import { userInfo } from '../userInfo';
 
@@ -114,7 +114,7 @@ export function ForumSideBar({ onSelect, onOpen }: { onSelect: (k: SectionKey, l
             <li key={m.key}>
               <button onClick={() => onSelect(m.key, m.locked)} className="flex w-full items-center justify-between px-3 py-2 text-[13px] text-[#555] transition-colors hover:bg-orange-50 hover:text-orange-600">
                 <span>{m.label}{m.locked ? ' 🔒' : ''}</span>
-                <span className="text-[#aaa]">{m.count}</span>
+                <span className="text-[#aaa]">{sectionCountOffset[m.key] ?? 0}</span>
               </button>
             </li>
           ))}

@@ -5,6 +5,7 @@ import TabletLayout from './components/TabletLayout';
 import HMLogs from './pages/homemind/HMLogs';
 import HMAssistant from './pages/homemind/HMAssistant';
 import HMDevices from './pages/homemind/HMDevices';
+import HMGate from './pages/homemind/HMGate';
 import ForumIndex from './pages/forum/ForumIndex';
 import ForumPostDetail from './pages/forum/ForumPostDetail';
 import AdminLogs from './pages/admin/AdminLogs';
@@ -30,9 +31,9 @@ export default function App() {
           <Route path="/phone" element={<TabletLayout />}>
             <Route index element={<PhoneHome />} />
             <Route path="homemind">
-              <Route index element={<HMLogs />} />
-              <Route path="ai" element={<HMAssistant />} />
-              <Route path="devices" element={<HMDevices />} />
+              <Route index element={<HMGate><HMLogs /></HMGate>} />
+              <Route path="ai" element={<HMGate><HMAssistant /></HMGate>} />
+              <Route path="devices" element={<HMGate><HMDevices /></HMGate>} />
             </Route>
             <Route path="notes">
               <Route index element={<NotesHome />} />

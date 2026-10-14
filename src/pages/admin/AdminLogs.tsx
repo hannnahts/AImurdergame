@@ -7,10 +7,10 @@ const MASK = '●●●●●●';
 const LINES = [
   { cls: 'text-green-500', text: '[SYSTEM] 扫描文件系统中...' },
   { cls: 'text-red-500', text: '[CRITICAL] 发现 4 条日志已被篡改。' },
-  { cls: 'text-green-500', text: `#1  03-14 23:52  客厅录像        编辑人: ${MASK}  设备: DEV-0314-A` },
-  { cls: 'text-green-500', text: `#2  03-15 02:13  门锁记录        编辑人: ${MASK}  设备: DEV-0314-A` },
-  { cls: 'text-green-500', text: `#3  03-15 02:13  位置记录        编辑人: ${MASK}  设备: DEV-0314-A` },
-  { cls: 'text-green-500', text: `#4  03-15 02:14  AI 对话         编辑人: ${MASK}  设备: DEV-0314-A` },
+  { cls: 'text-green-500', text: `#1  02-19 23:52  浴室 / 客厅录像编辑人: ${MASK}  设备: DEV-0314-A` },
+  { cls: 'text-green-500', text: `#2  02-20 02:13  门锁记录        编辑人: ${MASK}  设备: DEV-0314-A` },
+  { cls: 'text-green-500', text: `#3  02-20 02:13  位置记录        编辑人: ${MASK}  设备: DEV-0314-A` },
+  { cls: 'text-green-500', text: `#4  02-20 02:14  AI 对话         编辑人: ${MASK}  设备: DEV-0314-A` },
   { cls: 'text-amber-400', text: '[TRACE] 编辑账号信息已被加密,无法读取。' },
   { cls: 'text-zinc-400', text: '[NOTE] 检测到未登记的备份分区 (1.2GB)。访问被拒绝。' },
 ];
@@ -60,7 +60,7 @@ export default function AdminLogs() {
           [ 验证 ]
         </button>
         {feedback && <p className="mt-4 text-red-500 text-xs">{feedback}</p>}
-        {fails >= 3 && <p className="mt-2 text-zinc-500 text-xs">提示:事发当天的月和日。</p>}
+        {fails >= 3 && <p className="mt-2 text-zinc-500 text-xs">提示:出事那天的月和日。</p>}
         <button onClick={() => navigate('/phone/settings/developer')} className="mt-10 text-zinc-600 underline text-xs hover:text-white">
           返回
         </button>

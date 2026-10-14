@@ -32,7 +32,7 @@ export default function About() {
       <Group>
         <Row title="HomeMind 设备 ID" detail="DEV-0314-A" />
         <Row title="软件版本" detail="HomeMind OS 3.1.4" />
-        <Row title="版本号" detail="20260314.07" onClick={tapBuild} />
+        <Row title="版本号" detail="20291201.07" onClick={tapBuild} />
       </Group>
     </div>
   );

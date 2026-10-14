@@ -5,14 +5,14 @@ import { useGame } from '../../game/GameState';
 
 export default function Developer() {
   const navigate = useNavigate();
-  const { devMode } = useGame();
+  const { devMode, hmUnlocked, notify } = useGame();
   const [usb, setUsb] = useState(false);
   const [bounds, setBounds] = useState(false);
   if (!devMode) return <Navigate to="/phone/settings" replace />;
   return (
     <div>
       <Group title="HomeMind" footer="仅供维护人员使用。">
-        <Row title="HomeMind 后台" detail="需要 PIN" chevron onClick={() => navigate('/phone/settings/developer/console')} />
+        <Row title="HomeMind 后台" detail="需要 PIN" chevron onClick={() => (hmUnlocked ? navigate('/phone/settings/developer/console') : notify('请先通过 HomeMind 管理员验证'))} />
       </Group>
       <Group title="调试">
         <Row title="USB 调试" detail={<Switch on={usb} onChange={setUsb} />} />

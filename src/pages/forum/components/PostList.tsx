@@ -8,7 +8,12 @@ export default function PostList({ posts, onOpen }: { posts: Post[]; onOpen: (id
   }
   return (
     <ul>
-      {posts.map((p) => (
+      {posts.map((p) => {
+        const excerpt = p.excerpt ?? p.content.replace(/\s+/g, ' ').slice(0, 60);
+        const last = p.replyList?.[p.replyList.length - 1];
+        const lastBy = last?.author ?? p.author;
+        const lastTime = last?.time ?? p.time;
+        return (
         <li key={p.id} className="border-b border-[#eee] last:border-b-0">
           <button onClick={() => onOpen(p.id)} className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-orange-50/50">
             <Avatar name={p.author} size={38} />
@@ -18,7 +23,7 @@ export default function PostList({ posts, onOpen }: { posts: Post[]; onOpen: (id
                 <Badge tone="blue">{formatSectionName(p.section)}</Badge>
                 <span className="text-[15px] font-semibold leading-snug text-[#222]">{p.title}</span>
               </span>
-              <span className="mt-1 block truncate text-[13px] text-[#888]">{p.excerpt}</span>
+              <span className="mt-1 block truncate text-[13px] text-[#888]">{excerpt}</span>
               <span className="mt-1 flex flex-wrap gap-x-3 text-[12px] text-[#aaa]">
                 <span className="text-sky-700">{p.author}</span>
                 <span>{p.time}</span>
@@ -32,12 +37,13 @@ export default function PostList({ posts, onOpen }: { posts: Post[]; onOpen: (id
               <span className="block text-[11px] text-[#aaa]">查看</span>
             </span>
             <span className="hidden w-28 shrink-0 text-right text-[12px] leading-5 md:block">
-              <span className="block text-sky-700">{p.lastBy ?? p.author}</span>
-              <span className="block text-[#aaa]">{p.lastTime ?? p.time}</span>
+              <span className="block text-sky-700">{lastBy}</span>
+              <span className="block text-[#aaa]">{lastTime}</span>
             </span>
           </button>
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }

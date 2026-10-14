@@ -11,12 +11,13 @@ type Saved = {
   hints: Record<string, number>;
   habit: Habit | null;
   devMode: boolean;
+  hmUnlocked: boolean;
   adminOpen: boolean;
   ending: Ending;
 };
 
-const KEY = 'homemind-save-v2';
-const empty: Saved = { found: [], solved: [], hints: {}, habit: null, devMode: false, adminOpen: false, ending: null };
+const KEY = 'homemind-save-v3';
+const empty: Saved = { found: [], solved: [], hints: {}, habit: null, devMode: false, hmUnlocked: false, adminOpen: false, ending: null };
 
 function load(): Saved {
   try {
@@ -34,6 +35,7 @@ type Ctx = Saved & {
   askHint: (id: string) => void;
   setHabit: (h: Habit) => void;
   enableDev: () => void;
+  unlockHM: () => void;
   notify: (msg: string) => void;
   openAdmin: () => void;
   finish: (e: Exclude<Ending, null>) => void;
@@ -90,6 +92,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       solve,
       askHint: (id) => setSave((s) => ({ ...s, hints: { ...s.hints, [id]: Math.min(4, (s.hints[id] ?? 0) + 1) } })),
       setHabit: (habit) => setSave((s) => ({ ...s, habit })),
+      unlockHM: () => setSave((s) => ({ ...s, hmUnlocked: true })),
       enableDev: () => setSave((s) => ({ ...s, devMode: true })),
       notify: (msg) => setToast(msg),
       openAdmin: () => setSave((s) => ({ ...s, adminOpen: true })),

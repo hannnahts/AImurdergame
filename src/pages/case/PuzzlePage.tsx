@@ -85,7 +85,7 @@ export default function PuzzlePage() {
   const puzzle = PUZZLES.find((p) => p.id === id);
   const { found, solved, hints, askHint } = useGame();
 
-  if (!puzzle || puzzle.kind === 'pin') {
+  if (!puzzle || puzzle.kind === 'pin' || puzzle.kind === 'password') {
     return <div className="py-4 text-sm text-slate-500">找不到这个谜题。<Link to="/phone/notes/todo" className="ml-2 underline">返回待办</Link></div>;
   }
   if (puzzle.after && !solved.includes(puzzle.after)) {

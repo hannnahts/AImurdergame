@@ -9,12 +9,11 @@ export default function StartPage() {
     <div className="text-center max-w-sm px-6">
       <h1 className="text-3xl font-bold mb-6 tracking-widest text-slate-300">HOME MIND</h1>
       <p className="text-sm text-slate-400 leading-loose mb-8">
-        小雅已经三天没有消息了。
+        你整理她的遗物时，发现了一份手机备份。
         <br />
-        家里的智能系统记下了一切，却有人动过这些记录。
+        她已经火化了，留下的只有这些记录。
         <br />
-        翻看手机里的 App，找出是谁。
-      </p>
+        系统提示：部分记录可能被编辑过。</p>
       <button
         onClick={() => navigate(habit ? '/phone' : '/panel')}
         className="px-10 py-3 border border-slate-600 text-slate-200 hover:bg-white hover:text-black transition-all"

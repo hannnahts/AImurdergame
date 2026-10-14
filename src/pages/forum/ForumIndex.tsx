@@ -21,10 +21,10 @@ export default function ForumIndex() {
       activeSection === "home"
         ? forumPosts
         : activeSection.startsWith("mine_")
-          ? forumPosts.filter((p) => p.author === "小雅_Cloud")
+          ? forumPosts.filter((p) => p.mirrors?.includes(activeSection))
           : forumPosts.filter((p) => p.section === activeSection);
     const searched = q
-      ? base.filter((p) => p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q) || p.author.toLowerCase().includes(q))
+      ? base.filter((p) => p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q) || p.author.toLowerCase().includes(q))
       : base;
     return [...searched].sort((a, b) =>
       sort === "hot" ? b.views - a.views : Number(!!b.isPinned) - Number(!!a.isPinned),
