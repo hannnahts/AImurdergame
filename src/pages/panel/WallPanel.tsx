@@ -136,7 +136,7 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
   const curtainColor = mix('#1b1714', '#6d5f52', daylight * 0.8);
 
   return (
-    <div className="fixed inset-0 -z-0 overflow-hidden bg-[#0d0c0b]" aria-hidden>
+    <div className="absolute inset-x-0 top-0 h-[100dvh] overflow-hidden bg-[#0d0c0b] md:fixed md:inset-0 md:h-auto" aria-hidden>
       {/* 墙与地 */}
       <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#2a2521 0%,#1d1915 68%,#15120f 68%,#0f0d0b 100%)' }} />
       {/* 家具剪影 */}
@@ -154,7 +154,7 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
       <div className="absolute inset-0 bg-black" style={{ opacity: darkness, ...t(900) }} />
 
       {/* 窗：天空自发光，不受房间暗度影响 */}
-      <div className="absolute left-[6%] top-[12%] h-[56%] w-[24%] overflow-hidden rounded-t-[40%] ring-4 ring-[#14110e] max-md:left-[10%] max-md:top-[3%] max-md:h-[26%] max-md:w-[46%]">
+      <div className="absolute left-[6%] top-[5%] h-[24%] w-[44%] overflow-hidden rounded-t-[40%] ring-4 ring-[#14110e] md:top-[12%] md:h-[56%] md:w-[24%]">
         <div className="absolute inset-0" style={{ background: `linear-gradient(180deg,${mix('#070b18', '#6aa6e6', day)},${mix('#0e1633', '#cfe4f7', day)})` }} />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(0deg,rgba(255,140,80,0.6),transparent 70%)', opacity: dusk, ...t(1200) }} />
         <div className="absolute inset-y-0 left-1/2 w-px bg-black/50" />
@@ -166,7 +166,7 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
       </div>
 
       {/* 日光投影 */}
-      <div className="absolute bottom-[8%] left-[10%] h-[22%] w-[26%] origin-bottom-left -skew-x-[28deg] mix-blend-screen"
+      <div className="absolute bottom-[8%] left-[10%] h-[22%] w-[26%] origin-bottom-left -skew-x-[28deg] mix-blend-screen hidden md:block"
         style={{ background: `linear-gradient(90deg,${mix('#ffe2b0', '#ffb070', dusk)},transparent)`, opacity: daylight * 0.55, ...t(1100) }} />
       <div className="absolute left-[2%] top-[8%] h-[64%] w-[40%] mix-blend-screen"
         style={{ background: `radial-gradient(60% 55% at 30% 40%,${mix('#cfe4ff', '#ffb070', dusk)},transparent 70%)`, opacity: daylight * 0.22, ...t(1100) }} />
@@ -276,7 +276,9 @@ export default function WallPanel() {
       {/* 机身 */}
       <div className="relative z-10 w-full md:w-[min(1080px,94vw)] md:rounded-[2.75rem] md:bg-[#080808] md:p-3 md:ring-1 md:ring-white/10 md:shadow-[0_60px_140px_-40px_rgba(0,0,0,0.9)]">
         <div className="pointer-events-none absolute left-1/2 top-1.5 hidden h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/20 md:block" />
-        <div className="flex min-h-[100dvh] flex-col gap-5 bg-black/45 px-4 py-8 md:h-[min(700px,92dvh)] md:min-h-0 md:overflow-y-auto md:rounded-[calc(2.75rem-0.75rem)] md:px-7 md:py-6">
+        <div className="flex min-h-[100dvh] flex-col gap-5 px-4 py-8 md:h-[min(700px,92dvh)] md:min-h-0 md:overflow-y-auto md:rounded-[calc(2.75rem-0.75rem)] md:bg-black/45 md:px-7 md:py-6">
+          {/* 手机上:顶部留出一块"房间",让窗户和吊灯的光线变化看得见 */}
+          <div className="h-[30dvh] shrink-0 md:hidden" aria-hidden />
           {/* 顶栏 */}
           <div className="panel-rise flex flex-wrap items-end justify-between gap-4">
             <div>

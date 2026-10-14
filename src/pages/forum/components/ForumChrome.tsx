@@ -78,7 +78,7 @@ export function ForumNav({ active, onSelect }: { active: SectionKey | ''; onSele
         ))}
       </div>
       <button onClick={() => notify('发帖需要先通过新手验证')} className="ml-2 shrink-0 rounded bg-orange-500 px-3 py-1.5 text-[13px] text-white transition-colors hover:bg-orange-600 active:scale-[0.97] sm:px-4" aria-label="发帖">
-        ✎<span className="max-sm:hidden"> 发帖</span>
+        ✎<span className="hidden sm:inline"> 发帖</span>
       </button>
     </nav>
   );
