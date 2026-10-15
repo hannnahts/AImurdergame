@@ -109,12 +109,12 @@ function Chip({ active, onClick, children }: { active?: boolean; onClick: () => 
   );
 }
 
-function RoundBtn({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+function StepBtn({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
   return (
     <button aria-label={label} onClick={onClick}
-      className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-all duration-500 hover:bg-white/20 active:scale-[0.94]"
+      className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/90 transition-all duration-500 hover:bg-white/20 active:scale-[0.92]"
       style={{ transitionTimingFunction: EASE }}>
-      <Icon name={icon} />
+      <Icon name={icon} size={15} />
     </button>
   );
 }
@@ -125,57 +125,61 @@ type SceneProps = { hour: number; lamp: number; lampColor: string; curtain: numb
 function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
   const day = dayFactor(hour);
   const dusk = duskFactor(hour);
-  const daylight = day * (curtain / 100);
+  const daylight = day * (curtain / 100); // 窗帘决定有多少日光漏进来
   const ambient = clamp(0.06 + 0.62 * daylight + 0.62 * lamp);
-  const darkness = 0.88 - 0.88 * ambient;
-  const open = curtain / 100;
-  const panelScale = 1 - open * 0.86;
+  const darkness = 0.86 - 0.86 * ambient;
   const warmTint = clamp((roomTemp - 25) / 5);
   const coolTint = clamp((20 - roomTemp) / 5);
   const t = (ms = 900) => ({ transition: `opacity ${ms}ms ${EASE}, transform ${ms}ms ${EASE}` });
-  const curtainColor = mix('#1b1714', '#6d5f52', daylight * 0.8);
+  const beam = mix('#eaf2ff', '#ffb070', dusk);
+  const blinds = `repeating-linear-gradient(90deg,${beam} 0 14px,transparent 14px 58px)`;
+  const fade = 'linear-gradient(115deg,#000 8%,transparent 78%)';
 
   return (
     <div className="absolute inset-x-0 top-0 h-[100dvh] overflow-hidden bg-[#0d0c0b] lg:fixed lg:inset-0 lg:h-auto" aria-hidden>
       {/* 墙与地 */}
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#2a2521 0%,#1d1915 68%,#15120f 68%,#0f0d0b 100%)' }} />
-      {/* 家具剪影 */}
-      <div className="absolute bottom-[24%] left-[34%] h-[17%] w-[40%] rounded-t-[2.5rem] bg-[#16130f]" />
-      <div className="absolute bottom-[24%] left-[32%] h-[10%] w-[4%] rounded-2xl bg-[#1b1713]" />
-      <div className="absolute bottom-[24%] left-[72%] h-[10%] w-[4%] rounded-2xl bg-[#1b1713]" />
-      <div className="absolute bottom-[8%] left-[28%] h-[10%] w-[52%] rounded-[50%] bg-[#1a1612]" />
-      <div className="absolute right-[7%] top-[18%] h-[26%] w-[11%] rounded-md border border-white/5 bg-[#211c18]" />
-      <div className="absolute bottom-[24%] right-[5%] h-[20%] w-[5%] rounded-t-full bg-[#101a14]" />
-      {/* 吊灯 */}
-      <div className="absolute left-[60%] top-0 h-[18%] w-px bg-white/10" />
-      <div className="absolute left-[60%] top-[18%] h-[5%] w-[9%] -translate-x-1/2 rounded-t-[999px] bg-[#2d2620]" />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#2b2622 0%,#1c1814 70%,#14110e 70%,#0b0908 100%)' }} />
+
+      {/* 环境光斑:缓慢漂移,增加层次 */}
+      <div className="panel-drift absolute -left-[10%] top-[6%] h-[55%] w-[55%] rounded-full bg-[#7a5a3a]/25 blur-[90px]" />
+      <div className="panel-drift absolute -right-[10%] bottom-[8%] h-[50%] w-[45%] rounded-full bg-[#3a4a6a]/20 blur-[100px]" style={{ animationDelay: '-9s' }} />
+
+      {/* 景深:虚化的家具与挂画 */}
+      <div className="absolute inset-0 blur-[2.5px]">
+        <div className="absolute left-[7%] top-[9%] h-[9%] w-[16%] rounded-[3px] border border-white/5 bg-[#241f1a] lg:top-[13%] lg:h-[17%] lg:w-[9%]" />
+        <div className="absolute left-[27%] top-[12%] h-[5%] w-[9%] rounded-[3px] border border-white/5 bg-[#211c17] lg:left-[18%] lg:top-[18%] lg:h-[11%] lg:w-[6%]" />
+        <div className="absolute bottom-[24%] left-[3%] h-[24%] w-[7%] rounded-t-full bg-[#101a14] hidden lg:block" />
+        <div className="absolute bottom-[24%] left-[22%] h-[9%] w-[7%] rounded-md bg-[#1b1713] hidden lg:block" />
+        <div className="absolute bottom-[24%] left-[34%] h-[17%] w-[40%] rounded-t-[2.5rem] bg-[#16130f]" />
+        <div className="absolute bottom-[8%] left-[28%] h-[10%] w-[52%] rounded-[50%] bg-[#1a1612]" />
+        <div className="absolute bottom-[24%] right-[5%] h-[20%] w-[5%] rounded-t-full bg-[#101a14]" />
+      </div>
+
+      {/* 落地灯(桌面,在平板左侧)与吊灯(手机,在首屏上方) */}
+      <div className="absolute bottom-[22%] left-[14%] hidden h-[40%] w-[3px] bg-[#2d2620] lg:block" />
+      <div className="absolute bottom-[19%] left-[14%] hidden h-[3%] w-[7%] -translate-x-[40%] rounded-[50%] bg-[#241f1a] lg:block" />
+      <div className="absolute bottom-[60%] left-[14%] hidden h-[9%] w-[8%] -translate-x-[43%] bg-[#3a312a] lg:block" style={{ clipPath: 'polygon(20% 0,80% 0,100% 100%,0 100%)' }} />
+      <div className="absolute bottom-[60%] left-[14%] hidden h-[9%] w-[8%] -translate-x-[43%] lg:block" style={{ clipPath: 'polygon(20% 0,80% 0,100% 100%,0 100%)', background: lampColor, opacity: lamp * 0.85, ...t(800) }} />
+      <div className="absolute left-[72%] top-0 h-[13%] w-px bg-white/10 lg:hidden" />
+      <div className="absolute left-[72%] top-[13%] h-[4%] w-[11%] -translate-x-1/2 rounded-t-[999px] bg-[#3a312a] lg:hidden" />
+      <div className="absolute left-[72%] top-[13%] h-[4%] w-[11%] -translate-x-1/2 rounded-t-[999px] lg:hidden" style={{ background: lampColor, opacity: lamp * 0.85, ...t(800) }} />
 
       {/* 夜色(整体压暗) */}
       <div className="absolute inset-0 bg-black" style={{ opacity: darkness, ...t(900) }} />
 
-      {/* 窗：天空自发光，不受房间暗度影响 */}
-      <div className="absolute left-[6%] top-[5%] h-[24%] w-[44%] overflow-hidden rounded-t-[40%] ring-4 ring-[#14110e] lg:left-[5%] lg:top-[14%] lg:h-[52%] lg:w-[20%]">
-        <div className="absolute inset-0" style={{ background: `linear-gradient(180deg,${mix('#070b18', '#6aa6e6', day)},${mix('#0e1633', '#cfe4f7', day)})` }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(0deg,rgba(255,140,80,0.6),transparent 70%)', opacity: dusk, ...t(1200) }} />
-        <div className="absolute inset-y-0 left-1/2 w-px bg-black/50" />
-        {/* 窗帘 */}
-        <div className="absolute -left-[4%] -top-[3%] h-[106%] w-[56%] origin-left"
-          style={{ transform: `scaleX(${panelScale})`, background: `repeating-linear-gradient(90deg,${curtainColor} 0 14px,rgba(0,0,0,0.25) 14px 18px)`, transition: `transform 1100ms ${EASE}` }} />
-        <div className="absolute -right-[4%] -top-[3%] h-[106%] w-[56%] origin-right"
-          style={{ transform: `scaleX(${panelScale})`, background: `repeating-linear-gradient(90deg,${curtainColor} 0 14px,rgba(0,0,0,0.25) 14px 18px)`, transition: `transform 1100ms ${EASE}` }} />
-      </div>
-
-      {/* 日光投影 */}
-      <div className="absolute bottom-[8%] left-[10%] h-[22%] w-[26%] origin-bottom-left -skew-x-[28deg] mix-blend-screen hidden lg:block"
-        style={{ background: `linear-gradient(90deg,${mix('#ffe2b0', '#ffb070', dusk)},transparent)`, opacity: daylight * 0.55, ...t(1100) }} />
-      <div className="absolute left-[2%] top-[8%] h-[64%] w-[40%] mix-blend-screen"
-        style={{ background: `radial-gradient(60% 55% at 30% 40%,${mix('#cfe4ff', '#ffb070', dusk)},transparent 70%)`, opacity: daylight * 0.22, ...t(1100) }} />
-
-      {/* 灯光 */}
+      {/* 日光:穿过百叶投在墙上的斜条光影,随窗帘开合变化 */}
+      <div className="absolute -left-[12%] -top-[10%] h-[125%] w-[75%] -skew-x-[16deg] mix-blend-screen"
+        style={{ background: blinds, WebkitMaskImage: fade, maskImage: fade, filter: 'blur(5px)', opacity: daylight * 0.3, ...t(1100) }} />
       <div className="absolute inset-0 mix-blend-screen"
-        style={{ background: `radial-gradient(48% 62% at 62% 26%,${lampColor},transparent 72%)`, opacity: lamp * 0.85, ...t(800) }} />
+        style={{ background: `radial-gradient(60% 55% at 12% 20%,${beam},transparent 70%)`, opacity: daylight * 0.2, ...t(1100) }} />
+
+      {/* 灯光:落地灯 / 吊灯的光池 */}
+      <div className="absolute inset-0 mix-blend-screen hidden lg:block"
+        style={{ background: `radial-gradient(34% 55% at 14% 52%,${lampColor},transparent 72%)`, opacity: lamp * 0.8, ...t(800) }} />
+      <div className="absolute inset-0 mix-blend-screen lg:hidden"
+        style={{ background: `radial-gradient(70% 38% at 72% 14%,${lampColor},transparent 72%)`, opacity: lamp * 0.8, ...t(800) }} />
       <div className="absolute inset-0 mix-blend-screen"
-        style={{ background: `radial-gradient(70% 40% at 55% 100%,${lampColor},transparent 75%)`, opacity: lamp * 0.35, ...t(800) }} />
+        style={{ background: `radial-gradient(70% 40% at 55% 100%,${lampColor},transparent 75%)`, opacity: lamp * 0.3, ...t(800) }} />
 
       {/* 室温染色 */}
       <div className="absolute inset-0 bg-[#ff8a4c] mix-blend-soft-light" style={{ opacity: warmTint * 0.35, ...t(1500) }} />
@@ -339,21 +343,22 @@ export default function WallPanel() {
 
             {/* 温度 */}
             <Card className="md:col-span-4" delay={160} icon="thermo" title="温度" right={<span className="text-xs text-white/50">{heating}</span>}>
-              <div className="flex flex-1 items-center justify-between gap-3">
-                <div className="relative h-[150px] w-[150px] shrink-0">
+              <div className="flex flex-1 items-center justify-center">
+                <div className="relative h-[176px] w-[176px] shrink-0">
                   <svg viewBox="0 0 150 150" className="h-full w-full -rotate-[225deg]">
                     <circle cx="75" cy="75" r={R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" strokeLinecap="round" strokeDasharray={`${arc} ${C}`} />
                     <circle cx="75" cy="75" r={R} fill="none" stroke={target >= roomTemp ? '#ffb070' : '#7fb2ff'} strokeWidth="10" strokeLinecap="round"
                       strokeDasharray={`${Math.max(0.001, arc * p)} ${C}`} style={{ transition: `stroke-dasharray 700ms ${EASE}, stroke 700ms ${EASE}` }} />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-4xl font-light tabular-nums">{target}°</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
+                    <span className="text-5xl font-light tabular-nums">{target}°</span>
                     <span className="mt-1 text-[10px] text-white/45">室内 {roomTemp.toFixed(1)}°</span>
                   </div>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <RoundBtn icon="plus" label="升温" onClick={() => { setTarget((t) => Math.min(30, t + 1)); }} />
-                  <RoundBtn icon="minus" label="降温" onClick={() => { setTarget((t) => Math.max(16, t - 1)); }} />
+                  {/* 步进按钮嵌在表盘下方的缺口里 */}
+                  <div className="absolute inset-x-0 bottom-1 flex justify-center gap-3">
+                    <StepBtn icon="minus" label="降温" onClick={() => { setTarget((t) => Math.max(16, t - 1)); }} />
+                    <StepBtn icon="plus" label="升温" onClick={() => { setTarget((t) => Math.min(30, t + 1)); }} />
+                  </div>
                 </div>
               </div>
             </Card>

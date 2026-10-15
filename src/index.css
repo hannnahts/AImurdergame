@@ -31,3 +31,11 @@ button, [role="button"] { touch-action: manipulation; }
 @media (max-width: 767px) {
   input, textarea, select { font-size: 16px !important; }
 }
+
+/* 墙面面板背景:环境光斑缓慢漂移(仅 transform) */
+@keyframes panel-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
+.panel-drift { animation: panel-drift 26s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate; }
+@media (prefers-reduced-motion: reduce) { .panel-drift { animation: none; } }
