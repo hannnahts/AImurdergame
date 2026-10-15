@@ -155,15 +155,6 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
         <div className="absolute bottom-[24%] right-[5%] h-[20%] w-[5%] rounded-t-full bg-[#101a14]" />
       </div>
 
-      {/* 落地灯(桌面,在平板左侧)与吊灯(手机,在首屏上方) */}
-      <div className="absolute bottom-[22%] left-[14%] hidden h-[40%] w-[3px] bg-[#2d2620] lg:block" />
-      <div className="absolute bottom-[19%] left-[14%] hidden h-[3%] w-[7%] -translate-x-[40%] rounded-[50%] bg-[#241f1a] lg:block" />
-      <div className="absolute bottom-[60%] left-[14%] hidden h-[9%] w-[8%] -translate-x-[43%] bg-[#3a312a] lg:block" style={{ clipPath: 'polygon(20% 0,80% 0,100% 100%,0 100%)' }} />
-      <div className="absolute bottom-[60%] left-[14%] hidden h-[9%] w-[8%] -translate-x-[43%] lg:block" style={{ clipPath: 'polygon(20% 0,80% 0,100% 100%,0 100%)', background: lampColor, opacity: lamp * 0.85, ...t(800) }} />
-      <div className="absolute left-[72%] top-0 h-[13%] w-px bg-white/10 lg:hidden" />
-      <div className="absolute left-[72%] top-[13%] h-[4%] w-[11%] -translate-x-1/2 rounded-t-[999px] bg-[#3a312a] lg:hidden" />
-      <div className="absolute left-[72%] top-[13%] h-[4%] w-[11%] -translate-x-1/2 rounded-t-[999px] lg:hidden" style={{ background: lampColor, opacity: lamp * 0.85, ...t(800) }} />
-
       {/* 夜色(整体压暗) */}
       <div className="absolute inset-0 bg-black" style={{ opacity: darkness, ...t(900) }} />
 
@@ -173,7 +164,7 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
       <div className="absolute inset-0 mix-blend-screen"
         style={{ background: `radial-gradient(60% 55% at 12% 20%,${beam},transparent 70%)`, opacity: daylight * 0.2, ...t(1100) }} />
 
-      {/* 灯光:落地灯 / 吊灯的光池 */}
+      {/* 灯光:只有光,没有灯的实体 */}
       <div className="absolute inset-0 mix-blend-screen hidden lg:block"
         style={{ background: `radial-gradient(34% 55% at 14% 52%,${lampColor},transparent 72%)`, opacity: lamp * 0.8, ...t(800) }} />
       <div className="absolute inset-0 mix-blend-screen lg:hidden"
