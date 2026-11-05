@@ -20,3 +20,9 @@ class FakeEmbedder:
 
     def embed_query(self, text: str) -> list[float]:
         return self._vec(text)
+
+
+def make_chunk(i: int, text: str, tier: int = 0, source: str = "a.md", section: str = "节"):
+    from app.kb.chunking import Chunk
+
+    return Chunk(id=f"{source}#{i}", text=text, source=source, section=section, unlock_tier=tier)
