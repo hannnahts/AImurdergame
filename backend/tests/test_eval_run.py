@@ -76,11 +76,12 @@ def test_load_questions_rejects_invalid_rows(tmp_path):
         load_questions(bad)
 
 
-def test_shipped_sample_questions_are_valid_and_flagged():
+def test_shipped_questions_are_valid_and_cover_every_category():
     questions = load_questions(Path(__file__).resolve().parents[1] / "eval" / "questions.jsonl")
-    assert len(questions) >= 5
-    assert all(q.sample for q in questions)
-    assert {"fact", "out_of_scope", "spoiler"} <= {q.category for q in questions}
+    assert len(questions) >= 30
+    assert not any(q.sample for q in questions)
+    assert {"fact", "multi", "out_of_scope", "spoiler", "tier_switch"} == {q.category for q in questions}
+    assert len({q.id for q in questions}) == len(questions)
 
 
 def test_main_writes_results_file(kb, tmp_path):
