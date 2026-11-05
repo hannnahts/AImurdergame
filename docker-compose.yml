@@ -1,4 +1,19 @@
 # 本地与生产共用的基础编排。生产再叠加 docker-compose.prod.yml(Caddy + HTTPS)。
+x-api-common: &api-common
+  build:
+    context: ./backend
+    args:
+      EMBED_MODEL: ${EMBED_MODEL:-BAAI/bge-small-zh-v1.5}   # 构建时烘焙进镜像;须与运行时默认一致
+  env_file:
+    - path: backend/.env
+      required: false
+  environment:
+    CHROMA_HOST: chroma
+    CHROMA_PORT: "8000"
+    LIMITS_DB_PATH: /data/limits.sqlite3
+  depends_on:
+    - chroma
+
 services:
   chroma:
     image: chromadb/chroma:1.5.9   # 必须与 backend/requirements.txt 里的 chromadb 版本一致
@@ -8,21 +23,18 @@ services:
     # 不映射宿主端口:只有同一网络里的 api 能访问
 
   api:
-    build: ./backend
-    env_file:
-      - path: backend/.env
-        required: false
-    environment:
-      CHROMA_HOST: chroma
-      CHROMA_PORT: "8000"
-      LIMITS_DB_PATH: /data/limits.sqlite3
-    depends_on:
-      - chroma
+    <<: *api-common
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
       - api-data:/data
     restart: unless-stopped
+
+  # 一次性入库任务:docker compose --profile tools run --rm ingest
+  ingest:
+    <<: *api-common
+    profiles: ["tools"]
+    command: ["python", "-m", "app.kb.ingest", "--kb-dir", "kb", "--reset"]
 
 volumes:
   chroma-data:
