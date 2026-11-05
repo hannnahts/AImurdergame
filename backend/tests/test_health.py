@@ -37,3 +37,12 @@ def test_settings_env_override(monkeypatch):
 def test_allowed_origins_comma_separated(monkeypatch):
     monkeypatch.setenv("ALLOWED_ORIGINS", "https://a.example, https://b.example")
     assert Settings().origin_list == ["https://a.example", "https://b.example"]
+
+
+def test_health_down_when_chroma_unreachable_and_store_not_injected():
+    # 惰性连接:未注入 store 时,创建应用不连接;/health 在 chroma 不可达时返回 down 而不是报错
+    settings = Settings(chroma_host="127.0.0.1", chroma_port=1)
+    client = TestClient(create_app(settings))
+    r = client.get("/health")
+    assert r.status_code == 200
+    assert r.json() == {"status": "ok", "chroma": "down"}

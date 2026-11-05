@@ -1,0 +1,29 @@
+# 本地与生产共用的基础编排。生产再叠加 docker-compose.prod.yml(Caddy + HTTPS)。
+services:
+  chroma:
+    image: chromadb/chroma:1.5.9   # 必须与 backend/requirements.txt 里的 chromadb 版本一致
+    volumes:
+      - chroma-data:/data
+    restart: unless-stopped
+    # 不映射宿主端口:只有同一网络里的 api 能访问
+
+  api:
+    build: ./backend
+    env_file:
+      - path: backend/.env
+        required: false
+    environment:
+      CHROMA_HOST: chroma
+      CHROMA_PORT: "8000"
+      LIMITS_DB_PATH: /data/limits.sqlite3
+    depends_on:
+      - chroma
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - api-data:/data
+    restart: unless-stopped
+
+volumes:
+  chroma-data:
+  api-data:
