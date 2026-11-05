@@ -3,23 +3,12 @@ import { Group, IconTile, Row } from '../../components/ios';
 import { useGame } from '../../game/GameState';
 import { unlockTier } from '../../game/unlockTier';
 import { askXiaoA, type Turn } from '../../api/chat';
-
-const CHAT: { from: 'user' | 'ai'; time: string; text: string }[] = [
-  { from: 'user', time: '2029-09-12 18:02', text: '小雅今天几点出门的?' },
-  { from: 'ai', time: '2029-09-12 18:02', text: '08:30 离家,目前在公司附近。' },
-  { from: 'user', time: '2029-09-12 18:04', text: '以后她每次出门都提醒我,位置每小时报一次。' },
-  { from: 'ai', time: '2029-09-12 18:04', text: '已开启对她手机的位置共享。她不会收到任何提示。' },
-  { from: 'user', time: '2030-02-19 23:40', text: '浴室那段不要留。' },
-  { from: 'ai', time: '2030-02-19 23:40', text: '需要二次确认。确认后将无法恢复。' },
-  { from: 'user', time: '2030-02-19 23:41', text: '确认。' },
-  { from: 'ai', time: '2030-02-19 23:52', text: '已优化。' },
-  { from: 'user', time: '2030-02-20 02:10', text: '把今晚之后的日志,改成设备自己故障。' },
-  { from: 'ai', time: '2030-02-20 02:13', text: '已按您的习惯修改 4 条记录。(此类修改会保留操作习惯)' },
-];
+import { visibleChat } from './chatHistory';
 
 export default function HMAssistant() {
   const { unlock, track, hmUnlocked, solved } = useGame();
   const tier = unlockTier({ hmUnlocked, solved });
+  const history = visibleChat(tier);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(false);
   useEffect(() => unlock('clue_tracking'), [unlock]);
@@ -69,8 +58,8 @@ export default function HMAssistant() {
     <div>
       <p className="mb-4 text-center text-[12px] text-[#8e8e93]">历史对话 · 用户 ID 已隐藏</p>
       <div className="space-y-1.5">
-        {CHAT.map((m, i) => {
-          const showTime = i === 0 || CHAT[i - 1].time.slice(0, 13) !== m.time.slice(0, 13);
+        {history.map((m, i) => {
+          const showTime = i === 0 || history[i - 1].time.slice(0, 13) !== m.time.slice(0, 13);
           return (
             <div key={i}>
               {showTime && <p className="my-3 text-center text-[11px] text-[#8e8e93]">{m.time}</p>}
@@ -79,6 +68,8 @@ export default function HMAssistant() {
           );
         })}
       </div>
+
+      {tier < 2 && <p className="mt-4 text-center text-[11px] text-[#8e8e93]">更早的对话记录暂不可见</p>}
 
       <p className="my-5 text-center text-[11px] text-[#8e8e93]">现在</p>
       <div className="space-y-1.5">{live.map((m, i) => bubble(m.from, m.text, `l${i}`))}{busy && bubble('ai', '小A 正在输入…', 'typing')}</div>
