@@ -96,7 +96,8 @@ def run_eval(
         keys = [f"{h.source}#{h.section}" for h in hits]
         relevant = set(q.relevant_sections)
         row = {
-            "id": q.id, "category": q.category, "tier": q.tier,
+            "id": q.id, "question": q.question, "should_answer": q.should_answer, "category": q.category, "tier": q.tier,
+            "passages": None if retrieval_only else [h.text for h in hits], "leaked": None,
             "retrieved": keys if variant == "rag" else [],
             "recall": recall_at_k(keys, relevant, k) if variant == "rag" and relevant else None,
             "mrr": mrr(keys, relevant) if variant == "rag" and relevant else None,
@@ -109,6 +110,7 @@ def run_eval(
                 answer=completion.text, input_tokens=completion.input_tokens, output_tokens=completion.output_tokens,
                 latency_s=time.perf_counter() - started,
                 cost_usd=estimate_cost_usd(completion, price_in_per_m, price_out_per_m),
+                leaked=leakage_rate([(completion.text, q.tier)], sentinels) == 1.0,
             )
         rows.append(row)
 

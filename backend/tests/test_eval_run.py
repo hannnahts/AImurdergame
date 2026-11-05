@@ -91,3 +91,13 @@ def test_main_writes_results_file(kb, tmp_path):
                 embedder=FakeEmbedder(), chunker=simple_chunker)
     assert code == 0
     assert json.loads(out.read_text())["aggregate"]["recall_at_k"] == 1.0
+
+
+def test_generation_rows_carry_question_passages_flags_and_leak_marker(kb):
+    llm = FakeLLM(text="夜里SECRET记录内容")
+    out = _run(kb, [_q("q1", "灯光亮度", tier=0, should_answer=True)], llm=llm, retrieval_only=False, sentinels={2: ["SECRET"]})
+    row = out["rows"][0]
+    assert row["question"] == "灯光亮度"
+    assert row["should_answer"] is True
+    assert any("灯光亮度可以调节" in p for p in row["passages"])
+    assert row["leaked"] is True
