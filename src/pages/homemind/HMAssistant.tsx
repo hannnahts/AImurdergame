@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Group, IconTile, Row } from '../../components/ios';
 import { useGame } from '../../game/GameState';
+import { unlockTier } from '../../game/unlockTier';
+import { askXiaoA, type Turn } from '../../api/chat';
 
 const CHAT: { from: 'user' | 'ai'; time: string; text: string }[] = [
   { from: 'user', time: '2029-09-12 18:02', text: '小雅今天几点出门的?' },
@@ -15,19 +17,10 @@ const CHAT: { from: 'user' | 'ai'; time: string; text: string }[] = [
   { from: 'ai', time: '2030-02-20 02:13', text: '已按您的习惯修改 4 条记录。(此类修改会保留操作习惯)' },
 ];
 
-// 小A 的关键词应答(沿用旧版)
-function reply(text: string) {
-  const t = text.trim();
-  if (!t) return '小A听不懂主人的话,可以再说一遍吗?';
-  if (t.includes('忘记密码')) return '如果主人忘记了密码,可以通过手机发送验证信息修改密码哦~ 若手机不在身边,可以看看与 app 绑定的论坛内容,或许能勾起回忆 ><';
-  if (['浴室', '卫生间', '浴缸'].some((k) => t.includes(k))) return '目前浴室系统连接异常,可以检查接地情况、致电客服,或在论坛发技术帖子求助哦~';
-  if (t.includes('小雅')) return '小雅的最后一次登录是 2 天前。';
-  if (['删除', '记录'].some((k) => t.includes(k))) return '修改记录需要管理员二次确认,且不可恢复哦。';
-  return '小A听不懂主人的话,可以再说一遍吗?';
-}
-
 export default function HMAssistant() {
-  const { unlock, track } = useGame();
+  const { unlock, track, hmUnlocked, solved } = useGame();
+  const tier = unlockTier({ hmUnlocked, solved });
+  const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(false);
   useEffect(() => unlock('clue_tracking'), [unlock]);
   const [input, setInput] = useState('');
@@ -35,24 +28,33 @@ export default function HMAssistant() {
     { from: 'ai', text: 'Hi,我是小A,需要什么帮助?(试试:忘记密码 / 浴室)' },
   ]);
 
-  const send = () => {
+  const send = async () => {
     const t = input.trim();
-    if (!t) return;
-    let r: string;
+    if (!t || busy) return;
+    setInput('');
+    track('ai', `对小A说:${t}`);
+    const withUser = [...live, { from: 'user' as const, text: t }];
+
+    // 案发夜那组"优化 → 需要二次确认 → 确认 → 已优化"的复现,保持原样、不走后端
     if (pending && t.includes('确认')) {
-      r = '已优化。';
       setPending(false);
       track('optimize', '向小A确认优化');
-    } else if (t.includes('优化')) {
-      r = '需要二次确认。确认后将无法恢复。';
-      setPending(true);
-    } else {
-      r = reply(t);
-      setPending(false);
+      setLive([...withUser, { from: 'ai', text: '已优化。' }]);
+      return;
     }
-    track('ai', `对小A说:${t}`);
-    setLive((l) => [...l, { from: 'user', text: input }, { from: 'ai', text: r }]);
-    setInput('');
+    if (t.includes('优化')) {
+      setPending(true);
+      setLive([...withUser, { from: 'ai', text: '需要二次确认。确认后将无法恢复。' }]);
+      return;
+    }
+
+    setPending(false);
+    setLive(withUser);
+    setBusy(true);
+    const history: Turn[] = live.map((m) => ({ role: m.from === 'user' ? 'user' : 'assistant', content: m.text }));
+    const { answer } = await askXiaoA({ message: t, history, tier });
+    setLive([...withUser, { from: 'ai', text: answer }]);
+    setBusy(false);
   };
 
   const bubble = (from: 'user' | 'ai', text: string, key: string | number) => (
@@ -79,7 +81,7 @@ export default function HMAssistant() {
       </div>
 
       <p className="my-5 text-center text-[11px] text-[#8e8e93]">现在</p>
-      <div className="space-y-1.5">{live.map((m, i) => bubble(m.from, m.text, `l${i}`))}</div>
+      <div className="space-y-1.5">{live.map((m, i) => bubble(m.from, m.text, `l${i}`))}{busy && bubble('ai', '小A 正在输入…', 'typing')}</div>
       <div className="mt-4 flex gap-2">
         <input
           value={input}
@@ -88,7 +90,7 @@ export default function HMAssistant() {
           placeholder="对小A说点什么…"
           className="min-w-0 flex-1 rounded-full border border-black/10 bg-white px-4 py-2 text-[15px] text-black outline-none placeholder:text-[#c7c7cc]"
         />
-        <button onClick={send} className="rounded-full bg-[#007aff] px-5 text-[15px] text-white active:opacity-60">发送</button>
+        <button onClick={send} disabled={busy} className="rounded-full bg-[#007aff] px-5 text-[15px] text-white active:opacity-60 disabled:opacity-40">发送</button>
       </div>
 
       <div className="mt-8">

@@ -1,0 +1,4 @@
+# 域名取自环境变量 API_DOMAIN;Caddy 自动申请并续期 HTTPS 证书。
+{$API_DOMAIN} {
+	reverse_proxy api:8000
+}

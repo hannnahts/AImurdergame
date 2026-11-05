@@ -1,0 +1,36 @@
+# 生产叠加层:docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# 宿主只发布 caddy 的 80/443;api 与 chroma 只在内部网络里。
+services:
+  api:
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --proxy-headers
+      - --forwarded-allow-ips
+      - "*"   # api 不对外发布,能连上它的只有 caddy
+    environment:
+      ALLOWED_ORIGINS: https://hannnahts.github.io
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./backend/deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data      # 证书存这里,丢了会重新签发并可能触发频率限制
+      - caddy-config:/config
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  caddy-data:
+  caddy-config:

@@ -137,32 +137,12 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
 
   return (
     <div className="absolute inset-x-0 top-0 h-[100dvh] overflow-hidden bg-[#0d0c0b] lg:fixed lg:inset-0 lg:h-auto" aria-hidden>
-      {/* 墙与地 */}
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#2b2622 0%,#1c1814 70%,#14110e 70%,#0b0908 100%)' }} />
+      {/* 底色:一整片连续的渐变 */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#2b2622 0%,#1b1713 55%,#100d0b 100%)' }} />
 
       {/* 环境光斑:缓慢漂移,增加层次 */}
       <div className="panel-drift absolute -left-[10%] top-[6%] h-[55%] w-[55%] rounded-full bg-[#7a5a3a]/25 blur-[90px]" />
       <div className="panel-drift absolute -right-[10%] bottom-[8%] h-[50%] w-[45%] rounded-full bg-[#3a4a6a]/20 blur-[100px]" style={{ animationDelay: '-9s' }} />
-
-      {/* 景深:虚化的家具与挂画 */}
-      <div className="absolute inset-0 blur-[2.5px]">
-        <div className="absolute left-[7%] top-[9%] h-[9%] w-[16%] rounded-[3px] border border-white/5 bg-[#241f1a] lg:top-[13%] lg:h-[17%] lg:w-[9%]" />
-        <div className="absolute left-[27%] top-[12%] h-[5%] w-[9%] rounded-[3px] border border-white/5 bg-[#211c17] lg:left-[18%] lg:top-[18%] lg:h-[11%] lg:w-[6%]" />
-        <div className="absolute bottom-[24%] left-[3%] h-[24%] w-[7%] rounded-t-full bg-[#101a14] hidden lg:block" />
-        <div className="absolute bottom-[24%] left-[22%] h-[9%] w-[7%] rounded-md bg-[#1b1713] hidden lg:block" />
-        <div className="absolute bottom-[24%] left-[34%] h-[17%] w-[40%] rounded-t-[2.5rem] bg-[#16130f]" />
-        <div className="absolute bottom-[8%] left-[28%] h-[10%] w-[52%] rounded-[50%] bg-[#1a1612]" />
-        <div className="absolute bottom-[24%] right-[5%] h-[20%] w-[5%] rounded-t-full bg-[#101a14]" />
-      </div>
-
-      {/* 落地灯(桌面,在平板左侧)与吊灯(手机,在首屏上方) */}
-      <div className="absolute bottom-[22%] left-[14%] hidden h-[40%] w-[3px] bg-[#2d2620] lg:block" />
-      <div className="absolute bottom-[19%] left-[14%] hidden h-[3%] w-[7%] -translate-x-[40%] rounded-[50%] bg-[#241f1a] lg:block" />
-      <div className="absolute bottom-[60%] left-[14%] hidden h-[9%] w-[8%] -translate-x-[43%] bg-[#3a312a] lg:block" style={{ clipPath: 'polygon(20% 0,80% 0,100% 100%,0 100%)' }} />
-      <div className="absolute bottom-[60%] left-[14%] hidden h-[9%] w-[8%] -translate-x-[43%] lg:block" style={{ clipPath: 'polygon(20% 0,80% 0,100% 100%,0 100%)', background: lampColor, opacity: lamp * 0.85, ...t(800) }} />
-      <div className="absolute left-[72%] top-0 h-[13%] w-px bg-white/10 lg:hidden" />
-      <div className="absolute left-[72%] top-[13%] h-[4%] w-[11%] -translate-x-1/2 rounded-t-[999px] bg-[#3a312a] lg:hidden" />
-      <div className="absolute left-[72%] top-[13%] h-[4%] w-[11%] -translate-x-1/2 rounded-t-[999px] lg:hidden" style={{ background: lampColor, opacity: lamp * 0.85, ...t(800) }} />
 
       {/* 夜色(整体压暗) */}
       <div className="absolute inset-0 bg-black" style={{ opacity: darkness, ...t(900) }} />
@@ -173,7 +153,7 @@ function RoomScene({ hour, lamp, lampColor, curtain, roomTemp }: SceneProps) {
       <div className="absolute inset-0 mix-blend-screen"
         style={{ background: `radial-gradient(60% 55% at 12% 20%,${beam},transparent 70%)`, opacity: daylight * 0.2, ...t(1100) }} />
 
-      {/* 灯光:落地灯 / 吊灯的光池 */}
+      {/* 灯光:只有光,没有灯的实体 */}
       <div className="absolute inset-0 mix-blend-screen hidden lg:block"
         style={{ background: `radial-gradient(34% 55% at 14% 52%,${lampColor},transparent 72%)`, opacity: lamp * 0.8, ...t(800) }} />
       <div className="absolute inset-0 mix-blend-screen lg:hidden"
@@ -278,11 +258,11 @@ export default function WallPanel() {
       <div className="pointer-events-none fixed left-1/2 top-1/2 hidden h-[80vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.04] blur-[120px] lg:block" />
 
       {/* 机身 */}
-      <div className="relative z-10 w-full lg:ml-auto lg:mr-[4vw] lg:w-[clamp(760px,70vw,1000px)] lg:rounded-[2.75rem] lg:bg-[#080808] lg:p-3 lg:ring-1 lg:ring-white/10 lg:shadow-[0_60px_140px_-40px_rgba(0,0,0,0.9)]">
+      <div className="relative z-10 w-full lg:w-[min(1080px,94vw)] lg:rounded-[2.75rem] lg:bg-[#080808] lg:p-3 lg:ring-1 lg:ring-white/10 lg:shadow-[0_60px_140px_-40px_rgba(0,0,0,0.9)]">
         <div className="pointer-events-none absolute left-1/2 top-1.5 hidden h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/20 lg:block" />
         <div className="custom-scrollbar flex min-h-[100dvh] flex-col gap-5 px-4 py-8 md:px-7 lg:h-[min(700px,92dvh)] lg:min-h-0 lg:overflow-y-auto lg:rounded-[calc(2.75rem-0.75rem)] lg:bg-black/45 lg:py-6">
           {/* 手机上:顶部留出一块"房间",让窗户和吊灯的光线变化看得见 */}
-          <div className="h-[30dvh] shrink-0 lg:hidden" aria-hidden />
+          <div className="h-[24dvh] shrink-0 lg:hidden" aria-hidden />
           {/* 顶栏 */}
           <div className="panel-rise flex flex-wrap items-end justify-between gap-4">
             <div>
