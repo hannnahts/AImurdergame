@@ -1,4 +1,6 @@
-# 本地与生产共用的基础编排。生产再叠加 docker-compose.prod.yml(Caddy + HTTPS)。
+# 本地与生产共用的基础编排,不向宿主发布任何端口。
+# 本地:docker compose up(自动叠加 docker-compose.override.yml,api 绑定 127.0.0.1:8000)
+# 生产:docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d(Caddy + HTTPS)
 x-api-common: &api-common
   build:
     context: ./backend
@@ -24,8 +26,6 @@ services:
 
   api:
     <<: *api-common
-    ports:
-      - "127.0.0.1:8000:8000"
     volumes:
       - api-data:/data
     restart: unless-stopped
