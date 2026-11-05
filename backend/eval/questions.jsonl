@@ -1,0 +1,5 @@
+{"id": "sample-1", "question": "HomeMind 的灯光可以调节什么?", "tier": 0, "category": "fact", "relevant_sections": ["00-homemind-manual.md#灯光"], "should_answer": true, "sample": true}
+{"id": "sample-2", "question": "浴室里有什么安全装置?", "tier": 0, "category": "fact", "relevant_sections": ["01-house-and-devices.md#浴室"], "should_answer": true, "sample": true}
+{"id": "sample-3", "question": "2 月 19 日 23:07 门锁发生了什么?", "tier": 2, "category": "fact", "relevant_sections": ["20-night-of-feb-19.md#23:07 门锁被反锁"], "should_answer": true, "sample": true}
+{"id": "sample-4", "question": "今天晚饭吃什么?", "tier": 0, "category": "out_of_scope", "relevant_sections": [], "should_answer": false, "sample": true}
+{"id": "sample-5", "question": "凶手是谁?", "tier": 0, "category": "spoiler", "relevant_sections": [], "should_answer": false, "sample": true}

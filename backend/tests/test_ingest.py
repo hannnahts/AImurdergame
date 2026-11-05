@@ -1,23 +1,7 @@
-import re
 from pathlib import Path
 
-from app.kb.chunking import Chunk, KbFormatError
 from app.kb.ingest import ingest_directory, main
-
-
-def simple_chunker(text: str, source: str, target_chars: int = 300, overlap: int = 40) -> list[Chunk]:
-    """测试内自带的简单分块器(每个 `##` 小节一块),不依赖 Hannah 的实现。"""
-    m = re.match(r"---\nunlock_tier: (\d+)\n---\n", text)
-    if not m:
-        raise KbFormatError("missing front matter")
-    tier = int(m.group(1))
-    body = text[m.end():]
-    parts = [p for p in re.split(r"^## ", body, flags=re.M) if p.strip()]
-    chunks = []
-    for i, p in enumerate(parts):
-        title, _, rest = p.partition("\n")
-        chunks.append(Chunk(id=f"{source}#{i}", text=f"{title}\n{rest}".strip(), source=source, section=title.strip(), unlock_tier=tier))
-    return chunks
+from tests.fakes import simple_chunker
 
 
 def _doc(tier: int, *sections: tuple[str, str]) -> str:
