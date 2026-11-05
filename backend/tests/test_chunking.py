@@ -7,7 +7,6 @@ import pytest
 
 from app.kb.chunking import KbFormatError, chunk_markdown
 
-pytestmark = pytest.mark.handoff
 
 DOC = (
     "---\nunlock_tier: 2\n---\n"
